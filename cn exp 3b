@@ -1,0 +1,44 @@
+import java.io.*;
+import java.net.*;
+
+class TcpChatServer {
+
+    public static void main(String args[]) {
+
+        System.out.println("Server starting...");
+
+        try (ServerSocket server = new ServerSocket(4000);
+             Socket client = server.accept();
+             PrintWriter toClient = new PrintWriter(
+                     new BufferedWriter(
+                             new OutputStreamWriter(client.getOutputStream())), true);
+             BufferedReader fromClient = new BufferedReader(
+                     new InputStreamReader(client.getInputStream()));
+             BufferedReader fromUser = new BufferedReader(
+                     new InputStreamReader(System.in))) {
+
+            System.out.println("Server started");
+            System.out.println("Client connected");
+
+            String clientMsg, serverMsg;
+
+            while (true) {
+                clientMsg = fromClient.readLine();
+
+                if (clientMsg == null || clientMsg.equalsIgnoreCase("end"))
+                    break;
+
+                System.out.println("Client: " + clientMsg);
+
+                System.out.print("Message to Client: ");
+                serverMsg = fromUser.readLine();
+                toClient.println(serverMsg);
+            }
+
+            System.out.println("Client Disconnected");
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
